@@ -5,26 +5,15 @@ ARG COMPOSER_VERSION=latest
 # swoole - roadrunner
 ARG OCTANE_SERVER="swoole"
 
+FROM php:${PHP_VERSION}-cli-buster
+WORKDIR "/application/platform"
+LABEL maintainer="Vioriel"
+
 ###########################################
 # Composer
 ###########################################
 
-FROM composer:${COMPOSER_VERSION} AS vendor
-ARG OCTANE_SERVER
-
-WORKDIR "/application/platform"
-
-COPY composer* ./
-RUN composer install \
-  --no-dev \
-  --no-interaction \
-  --prefer-dist \
-  --ignore-platform-reqs \
-  --optimize-autoloader \
-  --apcu-autoloader \
-  --ansi \
-  --no-scripts \
-  --audit
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 
 ###########################################
@@ -39,10 +28,6 @@ RUN if [ ${OCTANE_SERVER} = "roadrunner" ]; then \
     fi
 
 ###########################################
-
-FROM php:${PHP_VERSION}-cli-buster
-
-LABEL maintainer="Vioriel"
 
 ARG WWWUSER=1000
 ARG WWWGROUP=1000
@@ -111,8 +96,9 @@ RUN pecl install igbinary
 RUN pecl install zstd
 RUN pecl install redis
 RUN npm install -g svgo
+RUN npm install chokidar
 RUN apt-get update &&  apt-get install -y clamav-daemon
-RUN freshclam
+# RUN freshclam
 # RUN systemd enable clamav-daemon clamav-freshclam
 
 ###########################################
@@ -290,3 +276,4 @@ RUN apt-get clean \
 # RUN apt-get update && apt-get install -y supervisor
 RUN mkdir -p /var/log/supervisor
 CMD ["/usr/bin/supervisord"]
+EXPOSE 9000
