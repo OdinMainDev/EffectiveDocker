@@ -3,10 +3,10 @@ ARG PHP_VERSION=8.2
 ARG COMPOSER_VERSION=latest
 
 # swoole - roadrunner
-ARG OCTANE_SERVER="swoole"
+ARG OCTANE_SERVER="roadrunner"
 
 FROM php:${PHP_VERSION}-cli-buster
-WORKDIR "/application/platform"
+WORKDIR "/application"
 LABEL maintainer="Vioriel"
 
 ###########################################
@@ -50,6 +50,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 SHELL ["/bin/bash", "-eou", "pipefail", "-c"]
 
+RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
+
 RUN apt-get update; \
     apt-get upgrade -yqq; \
     pecl -q channel-update pecl.php.net; \
@@ -75,7 +77,7 @@ RUN apt-get update; \
           libmemcached-dev \
           libz-dev \
         #   libbrotli-dev \
-        #   libpq-dev \
+          libpq-dev \
           libjpeg-dev \
           libpng-dev \
           libfreetype6-dev \
@@ -176,7 +178,7 @@ RUN if [ ${INSTALL_BCMATH} = true ]; then \
 # RDKAFKA
 ###########################################
 
-ARG INSTALL_RDKAFKA=true
+ARG INSTALL_RDKAFKA=false
 
 RUN if [ ${INSTALL_RDKAFKA} = true ]; then \
       apt-get install -yqq --no-install-recommends --show-progress librdkafka-dev \
@@ -188,19 +190,19 @@ RUN if [ ${INSTALL_RDKAFKA} = true ]; then \
 # OpenSwoole/Swoole extension
 ###########################################
 
-ARG SERVER=swoole
+ARG EXTENSIONSWOOLE="swoole"
 
 RUN if [ ${OCTANE_SERVER} = "swoole" ]; then \
       apt-get install -yqq --no-install-recommends --show-progress libc-ares-dev \
       && pecl -q install -o -f -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' ${SERVER} \
-      && docker-php-ext-enable ${SERVER}; \
+      && docker-php-ext-enable ${EXTENSIONSWOOLE}; \
   fi
 
 ###########################################################################
 # Human Language and Character Encoding Support
 ###########################################################################
 
-ARG INSTALL_INTL=true
+ARG INSTALL_INTL=false
 
 RUN if [ ${INSTALL_INTL} = true ]; then \
       apt-get install -yqq --no-install-recommends --show-progress zlib1g-dev libicu-dev g++ \
@@ -222,7 +224,7 @@ RUN if [ ${INSTALL_MEMCACHED} = true ]; then \
 # MySQL Client
 ###########################################
 
-ARG INSTALL_MYSQL_CLIENT=true
+ARG INSTALL_MYSQL_CLIENT=false
 
 RUN if [ ${INSTALL_MYSQL_CLIENT} = true ]; then \
       apt-get install -yqq --no-install-recommends --show-progress default-mysql-client; \
@@ -232,7 +234,7 @@ RUN if [ ${INSTALL_MYSQL_CLIENT} = true ]; then \
 # pdo_pgsql
 ###########################################
 
-ARG INSTALL_PDO_PGSQL=false
+ARG INSTALL_PDO_PGSQL=true
 
 RUN if [ ${INSTALL_PDO_PGSQL} = true ]; then \
       docker-php-ext-install pdo_pgsql; \
@@ -242,7 +244,7 @@ RUN if [ ${INSTALL_PDO_PGSQL} = true ]; then \
 # pgsql
 ###########################################
 
-ARG INSTALL_PGSQL=false
+ARG INSTALL_PGSQL=true
 
 RUN if [ ${INSTALL_PGSQL} = true ]; then \
       docker-php-ext-install pgsql; \
@@ -257,7 +259,7 @@ RUN if [ ${APP_WITH_SCHEDULER} = true ]; then \
            -O /usr/bin/supercronic \
       && chmod +x /usr/bin/supercronic \
       && mkdir -p /etc/supercronic \
-      && echo "*/1 * * * * php /application/platform/artisan schedule:run --verbose --no-interaction" > /etc/supercronic/laravel; \
+      && echo "*/1 * * * * php /application/artisan schedule:run --verbose --no-interaction" > /etc/supercronic/laravel; \
   fi
 
 ###########################################
@@ -267,7 +269,7 @@ RUN groupadd --force -g $WWWGROUP octane \
 
 RUN apt-get clean \
     && docker-php-source delete \
-    && pecl clear-cache \
+    # && pecl clear-cache \
     && rm -R /tmp/pear \
     && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
     && rm /var/log/lastlog /var/log/faillog

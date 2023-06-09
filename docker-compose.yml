@@ -4,8 +4,8 @@ services:
     redis:
       image: redis:alpine
       container_name: redis
-      # networks:
-      #  - internal
+      networks:
+       - internal
 
     php:
       build: sourcefiles/php
@@ -27,11 +27,21 @@ services:
       volumes:
           - ./application:/application
           - ./sourcefiles/nginx:/etc/nginx/conf.d
+          - ./sourcefiles/certbot/www:/var/www/certbot:ro
+          - ./sourcefiles/certbot/conf:/etc/letsencrypt:ro
       ports:
         - "80:80"
+        - "443:443"
       networks:
         - internal
 
+    certbot:
+      image: certbot/certbot:latest
+      volumes:
+        - ./sourcefiles/certbot/www:/var/www/certbot:rw
+        - ./sourcefiles/certbot/conf:/etc/letsencrypt:rw
+      command: certonly --webroot -w /var/www/certbot --force-renewal --email ${EMAIL} -d ${DOMAIN} --agree-tos
+      
 networks:
   internal:
     driver: bridge
