@@ -99,7 +99,7 @@ RUN pecl install zstd
 RUN pecl install redis
 RUN npm install -g svgo
 RUN npm install chokidar
-RUN apt-get update &&  apt-get install -y clamav-daemon
+# RUN apt-get update &&  apt-get install -y clamav-daemon
 # RUN freshclam
 # RUN systemd enable clamav-daemon clamav-freshclam
 
@@ -120,6 +120,12 @@ RUN docker-php-ext-configure zip && docker-php-ext-install zip;
 ###########################################
 
 RUN docker-php-ext-install mbstring;
+
+###########################################
+# sockets
+###########################################
+
+RUN docker-php-ext-install sockets
 
 ###########################################
 # GD
@@ -268,11 +274,11 @@ RUN groupadd --force -g $WWWGROUP octane \
     && useradd -ms /bin/bash --no-log-init --no-user-group -g $WWWGROUP -u $WWWUSER octane
 
 RUN apt-get clean \
-    && docker-php-source delete \
+    && docker-php-source delete 
     # && pecl clear-cache \
-    && rm -R /tmp/pear \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-    && rm /var/log/lastlog /var/log/faillog
+    # && rm -R /tmp/pear \
+    # && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    # && rm /var/log/lastlog /var/log/faillog
 
 # Супервизор
 # RUN apt-get update && apt-get install -y supervisor

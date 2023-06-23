@@ -44,11 +44,16 @@ services:
 
     clamav:
       #debian: image: mkodockx/docker-clamav
-      image: mkodockx/docker-clamav:alpine
+      image: clamav/clamav:latest_base
+      tty: true
       container_name: clamav
       restart: unless-stopped
       volumes:
         - ./sourcefiles/clamav:/var/lib/clamav
+      environment:
+        - CLAMD_STARTUP_TIMEOUT=1800
+      networks:
+        - internal
       
 networks:
   internal:
