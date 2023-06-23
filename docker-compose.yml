@@ -41,6 +41,14 @@ services:
         - ./sourcefiles/certbot/www:/var/www/certbot:rw
         - ./sourcefiles/certbot/conf:/etc/letsencrypt:rw
       command: certonly --webroot -w /var/www/certbot --force-renewal --email ${EMAIL} -d ${DOMAIN} --agree-tos
+
+    clamav:
+      #debian: image: mkodockx/docker-clamav
+      image: mkodockx/docker-clamav:alpine
+      container_name: nextav
+      restart: unless-stopped
+      volumes:
+        - ./sourcefiles/clamav:/var/lib/clamav
       
 networks:
   internal:
