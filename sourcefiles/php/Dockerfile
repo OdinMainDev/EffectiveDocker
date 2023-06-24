@@ -157,7 +157,7 @@ ARG INSTALL_PHPREDIS=true
 RUN if [ ${INSTALL_PHPREDIS} = true ]; then \
       pecl -q install -o -f redis \
       && rm -rf /tmp/pear \
-      && docker-php-ext-enable redis; \
+      && docker-php-ext-install redis; \
   fi
 
 ###########################################
