@@ -40,6 +40,7 @@ services:
       environment:
         - CONFIG_TYPE=${CONFIG_TYPE}
       # image: certbot/certbot:latest
+      entrypoint: sh -c "/sourcefiles/${CONFIG_TYPE}.sh"
       volumes:
         - ./sourcefiles/certbot/www:/var/www/certbot:rw
         - ./sourcefiles/certbot/conf:/etc/letsencrypt:rw
