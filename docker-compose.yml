@@ -26,7 +26,7 @@ services:
       tty: true
       volumes:
           - ./application:/application
-          - ./sourcefiles/nginx/${NGINX_CONF}.conf:/etc/nginx/conf.d/default.conf
+          - ./sourcefiles/nginx/${CONFIG_TYPE}:/etc/nginx/conf.d
           - ./sourcefiles/certbot/www:/var/www/certbot:ro
           - ./sourcefiles/certbot/conf:/etc/letsencrypt:ro
       ports:
@@ -36,11 +36,14 @@ services:
         - internal
 
     certbot:
-      image: certbot/certbot:latest
+      build: sourcefiles/certbot
+      environment:
+        - CONFIG_TYPE=${CONFIG_TYPE}
+      # image: certbot/certbot:latest
       volumes:
         - ./sourcefiles/certbot/www:/var/www/certbot:rw
         - ./sourcefiles/certbot/conf:/etc/letsencrypt:rw
-      command: certonly --webroot -w /var/www/certbot --force-renewal --email ${EMAIL} -d ${DOMAIN} --agree-tos
+      # command: certonly --webroot -w /var/www/certbot --force-renewal --email ${EMAIL} -d ${DOMAIN} --agree-tos
 
     clamav:
       #debian: image: mkodockx/docker-clamav
