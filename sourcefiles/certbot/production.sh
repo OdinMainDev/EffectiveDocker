@@ -1,1 +1,1 @@
-echo "success"
+echo "skipped"
