@@ -3,26 +3,25 @@ services:
 
     redis:
       image: redis:alpine
-      container_name: redis
+      container_name: esredis
       networks:
        - internal
 
-    php:
-      build: sourcefiles/php
+    main:
+      build: sourcefiles/main
       working_dir: /application
-      container_name: php
+      container_name: esmain
       tty: true
       volumes:
         - ./application:/application
-        # - ./sourcefiles/php/php-ini-overrides.ini:/etc/php/8.1/alpine/conf.d/99-overrides.ini
-        - ./sourcefiles/php/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
+        - ./sourcefiles/main/supervisord.conf:/etc/supervisor/conf.d/supervisord.conf
       networks:
         - internal
 
     webserver:
       image: nginx:alpine
       working_dir: /application
-      container_name: webserver
+      container_name: eswebserver
       tty: true
       volumes:
           - ./application:/application
@@ -37,7 +36,7 @@ services:
 
     certbot:
       image: certbot/certbot:latest
-      container_name: certbot
+      container_name: escertbot
       volumes:
         - ./sourcefiles/certbot/www:/var/www/certbot:rw
         - ./sourcefiles/certbot/conf:/etc/letsencrypt:rw
@@ -49,7 +48,7 @@ services:
       # image: mkodockx/docker-clamav
       image: clamav/clamav:latest_base
       tty: true
-      container_name: clamav
+      container_name: esclamav
       restart: unless-stopped
       volumes:
         - ./sourcefiles/clamav:/var/lib/clamav
