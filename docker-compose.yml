@@ -50,6 +50,8 @@ services:
       tty: true
       container_name: esclamav
       restart: unless-stopped
+      ports:
+        - "3310:3310"
       volumes:
         - ./sourcefiles/clamav:/var/lib/clamav
       environment:
