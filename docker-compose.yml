@@ -10,7 +10,6 @@ services:
       build: sourcefiles/app
       working_dir: /application
       container_name: esapp
-      tty: true
       volumes:
         - ./build:/application
         - ./web_admin:/web_admin
@@ -22,7 +21,6 @@ services:
       image: nginx:alpine
       working_dir: /application
       container_name: esngingx
-      tty: true
       volumes:
           - ./build:/application
           - ./web_admin:/web_admin
