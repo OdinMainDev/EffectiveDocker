@@ -24,4 +24,4 @@ CMD ["/usr/bin/supervisord"]
 # CMD ["node", "/web_admin/index.js"]
 # CMD ["pm2-runtime", "/web_admin/index.js"]
 EXPOSE 10600
-EXPOSE 4173
+EXPOSE 3000
