@@ -186,7 +186,7 @@ const options = {
 				z-index: 1 !important;
 			}
 		</style>
-		` + head + '\n\n		<!-- TODO: переписать адекватно и чтоб анимашка не терялась ( display: none; ) -->\n		<style>\n			.fade:not(.show) {\n				opacity: 0;\n				display: none !important;\n			}\n		</style>\n	</head>\n	<body data-sveltekit-preload-data="hover" class="navbar-combo nav-slim">\n		<div style="display: contents">' + body + '</div>\n\n\n		<script src="' + assets2 + '/vendors/popper/popper.min.js"><\/script>\n		<script src="' + assets2 + '/vendors/bootstrap/bootstrap.min.js"><\/script>\n		<script src="' + assets2 + '/vendors/anchorjs/anchor.min.js"><\/script>\n		<script src="' + assets2 + '/vendors/is/is.min.js"><\/script>\n		<script src="' + assets2 + '/vendors/fontawesome/all.min.js"><\/script>\n		<script src="' + assets2 + '/vendors/lodash/lodash.min.js"><\/script>\n		<script src="https://polyfill.io/v3/polyfill.min.js?features=window.scroll"><\/script>\n		<script src="' + assets2 + '/vendors/list.js/list.min.js"><\/script>\n		<script src="' + assets2 + '/vendors/dayjs/dayjs.min.js"><\/script>\n		<script src="' + assets2 + '/assets/js/esplatform.js"><\/script>\n	</body>\n</html>\n',
+		` + head + "\n\n		<!-- TODO: переписать адекватно и чтоб анимашка не терялась ( display: none; ) -->\n		<style>\n			.fade:not(.show) {\n				opacity: 0;\n				display: none !important;\n			}\n			.img-dropdown{background-image:url(" + assets2 + '/logo/logo_op1.png)}\n			.navbar-top.navbar-slim .navbar-brand{color:#710df5!important}\n		</style>\n	</head>\n	<body data-sveltekit-preload-data="hover" class="navbar-combo nav-slim">\n		<div style="display: contents">' + body + '</div>\n\n\n		<script src="' + assets2 + '/vendors/popper/popper.min.js"><\/script>\n		<script src="' + assets2 + '/vendors/bootstrap/bootstrap.min.js"><\/script>\n		<script src="' + assets2 + '/vendors/anchorjs/anchor.min.js"><\/script>\n		<script src="' + assets2 + '/vendors/is/is.min.js"><\/script>\n		<script src="' + assets2 + '/vendors/fontawesome/all.min.js"><\/script>\n		<script src="' + assets2 + '/vendors/lodash/lodash.min.js"><\/script>\n		<script src="https://polyfill.io/v3/polyfill.min.js?features=window.scroll"><\/script>\n		<script src="' + assets2 + '/vendors/list.js/list.min.js"><\/script>\n		<script src="' + assets2 + '/vendors/dayjs/dayjs.min.js"><\/script>\n		<script src="' + assets2 + '/assets/js/esplatform.js"><\/script>\n	</body>\n</html>\n',
     error: ({ status, message }) => '<!DOCTYPE html>\n<html lang="en">\n	<head>\n		<meta charset="utf-8" />\n		<title>' + message + `</title>
 
 		<style>
@@ -248,7 +248,7 @@ const options = {
 		<div class="error">
 			<span class="status">` + status + '</span>\n			<div class="message">\n				<h1>' + message + "</h1>\n			</div>\n		</div>\n	</body>\n</html>\n"
   },
-  version_hash: "17ceree"
+  version_hash: "1nbj4rj"
 };
 function get_hooks() {
   return import('./chunks/hooks.server-fee0af8b.js');
