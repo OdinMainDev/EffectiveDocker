@@ -79,7 +79,7 @@ export const dictionary = {
 		"/[lang]/(protected)/games/providers/list": [~28,[2]],
 		"/[lang]/(protected)/games/providers/sort/[[id]]": [~29,[2]],
 		"/[lang]/login/[key]": [~44],
-		"/[lang]/logout": [45],
+		"/[lang]/logout": [~45],
 		"/[lang]/(protected)/plugins/email": [~30,[2]],
 		"/[lang]/(protected)/plugins/email/edit/[[id]]": [~31,[2]],
 		"/[lang]/(protected)/plugins/slider/edit/[[id]]": [~32,[2]],
