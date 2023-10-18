@@ -1,1 +1,0 @@
-export { default as component } from "../../../../src/routes/[lang]/(protected)/users/bots/edit/[[id]]/+page.svelte";

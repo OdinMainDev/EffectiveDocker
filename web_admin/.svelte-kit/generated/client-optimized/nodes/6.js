@@ -1,1 +1,0 @@
-export { default as component } from "../../../../src/routes/[lang]/(protected)/bonuses/stat/+page.svelte";

@@ -1,1 +1,0 @@
-export { default as component } from "../../../../src/routes/[lang]/(protected)/plugins/slider/edit/[[id]]/+page.svelte";
