@@ -1,0 +1,1 @@
+ALTER TABLE public.game_data ALTER COLUMN meta TYPE jsonb USING meta::jsonb::jsonb;
