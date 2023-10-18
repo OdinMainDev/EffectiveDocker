@@ -7,8 +7,6 @@ const load = async ({ data }) => {
   await setLocale(lang);
   return i18n;
 };
-const ssr = false;
 export {
-  load,
-  ssr
+  load
 };

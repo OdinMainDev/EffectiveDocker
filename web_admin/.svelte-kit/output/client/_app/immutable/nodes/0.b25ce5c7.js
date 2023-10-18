@@ -1,1 +1,0 @@
-import{a as n,s as r,b as l}from"../chunks/i18n.ff0ccd42.js";import{L as m}from"../chunks/layout.fdcff010.js";const c=async({data:o})=>{const{i18n:t,translations:a}=o,{lang:s,route:e}=t;return n(a),await r(e),await l(s),t},i=!1,p=Object.freeze(Object.defineProperty({__proto__:null,load:c,ssr:i},Symbol.toStringTag,{value:"Module"}));export{m as component,p as universal};
