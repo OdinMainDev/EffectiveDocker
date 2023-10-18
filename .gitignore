@@ -3,3 +3,4 @@ sourcefiles/certbot/www/*
 sourcefiles/certbot/conf/*
 .env
 sourcefiles/clamav/*
+build/storage/logs/*
