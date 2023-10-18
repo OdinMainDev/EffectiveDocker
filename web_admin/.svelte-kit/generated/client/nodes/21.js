@@ -1,0 +1,1 @@
+export { default as component } from "../../../../src/routes/[lang]/(protected)/games/apis/list/+page.svelte";

@@ -1,0 +1,1 @@
+export { default as component } from "../../../../src/routes/[lang]/(protected)/dev/casinos/edit/[[id]]/+page.svelte";

@@ -1,0 +1,1 @@
+export { default as component } from "../../../../src/routes/[lang]/(protected)/finances/withdraws/providers/edit/[[id]]/+page.svelte";

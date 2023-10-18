@@ -1,0 +1,39 @@
+import { a as subscribe } from './utils-b921a818.js';
+import { c as create_ssr_component, b as add_attribute, a as each, e as escape } from './ssr-f419b600.js';
+import { e as t2 } from './i18n-f1b3a1ed.js';
+
+const Select = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+  let $t, $$unsubscribe_t;
+  $$unsubscribe_t = subscribe(t2, (value2) => $t = value2);
+  let { id } = $$props;
+  let { name } = $$props;
+  let { label } = $$props;
+  let { error } = $$props;
+  let { value } = $$props;
+  let { items } = $$props;
+  let inputId;
+  if (id !== void 0) {
+    inputId = id;
+  } else {
+    inputId = "select-" + name;
+  }
+  if ($$props.id === void 0 && $$bindings.id && id !== void 0)
+    $$bindings.id(id);
+  if ($$props.name === void 0 && $$bindings.name && name !== void 0)
+    $$bindings.name(name);
+  if ($$props.label === void 0 && $$bindings.label && label !== void 0)
+    $$bindings.label(label);
+  if ($$props.error === void 0 && $$bindings.error && error !== void 0)
+    $$bindings.error(error);
+  if ($$props.value === void 0 && $$bindings.value && value !== void 0)
+    $$bindings.value(value);
+  if ($$props.items === void 0 && $$bindings.items && items !== void 0)
+    $$bindings.items(items);
+  $$unsubscribe_t();
+  return `<div class="form-floating"><select${add_attribute("data-name", name, 0)} class="form-select"${add_attribute("id", inputId, 0)}${add_attribute("name", name, 0)}>${each(items, (item) => {
+    return `${typeof item == "object" ? `<option${add_attribute("value", item.value, 0)}>${escape(item.label)}</option>` : `<option${add_attribute("value", item, 0)}>${escape(item)}</option>`}`;
+  })}</select> <label${add_attribute("for", inputId, 0)}>${escape(label)}</label> <div class="invalid-feedback error errorRepeater">${error ? `${escape($t("errors." + error))}` : ``}</div></div>`;
+});
+
+export { Select as S };
+//# sourceMappingURL=select-5532be67.js.map

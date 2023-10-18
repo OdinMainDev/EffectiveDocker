@@ -1,0 +1,1 @@
+export { default as component } from "../../../../src/routes/[lang]/(protected)/plugins/email/edit/[[id]]/+page.svelte";
