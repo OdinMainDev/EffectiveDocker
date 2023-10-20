@@ -1,1 +1,0 @@
-ALTER TABLE game_categories ADD COLUMN position int;

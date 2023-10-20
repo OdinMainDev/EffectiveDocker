@@ -1,1 +1,0 @@
-ALTER TABLE game_data  DROP COLUMN has_freerounds;
