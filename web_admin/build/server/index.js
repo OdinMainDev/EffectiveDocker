@@ -1,7 +1,7 @@
-import { c as create_ssr_component, s as setContext, v as validate_component, m as missing_component } from './chunks/ssr-f419b600.js';
-import { e as error, j as json, t as text, R as Redirect, H as HttpError, A as ActionFailure } from './chunks/index-a4865dbd.js';
-import { w as writable, r as readable } from './chunks/index2-5f3880fe.js';
-import './chunks/utils-b921a818.js';
+import { c as create_ssr_component, s as setContext, v as validate_component, m as missing_component } from './chunks/ssr-b90e13c7.js';
+import { e as error, j as json, t as text, R as Redirect, H as HttpError, A as ActionFailure } from './chunks/index-0087e825.js';
+import { w as writable, r as readable } from './chunks/index2-3dbd9eb2.js';
+import './chunks/utils-6799e008.js';
 
 let base = "";
 let assets = base;
@@ -52,8 +52,10 @@ const Root = create_ssr_component(($$result, $$props, $$bindings, slots) => {
     $$bindings.data_3(data_3);
   let $$settled;
   let $$rendered;
+  let previous_head = $$result.head;
   do {
     $$settled = true;
+    $$result.head = previous_head;
     {
       stores.page.set(page);
     }
@@ -157,7 +159,7 @@ const options = {
   root: Root,
   service_worker: false,
   templates: {
-    app: ({ head, body, assets: assets2, nonce, env }) => '<!DOCTYPE html>\n<html lang="en">\n	<head>\n		<meta charset="utf-8">\n		<meta name="viewport" content="width=device-width, initial-scale=1">\n		<link rel="icon" href="' + assets2 + '/favicon.png" />\n\n		<script src="' + assets2 + '/vendors/imagesloaded/imagesloaded.pkgd.min.js"><\/script>\n		<script src="' + assets2 + '/vendors/simplebar/simplebar.min.js"><\/script>\n		<script src="' + assets2 + '/assets/js/config.js"><\/script>\n		<link rel="preconnect" href="https://fonts.googleapis.com">\n		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">\n		<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&amp;display=swap" rel="stylesheet">\n		<link href="' + assets2 + '/vendors/simplebar/simplebar.min.css" rel="stylesheet">\n		<link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">\n		<link href="' + assets2 + '/assets/css/theme-rtl.min.css" type="text/css" rel="stylesheet" id="style-rtl">\n		<link href="' + assets2 + '/assets/css/theme.min.css" type="text/css" rel="stylesheet" id="style-default">\n		<link href="' + assets2 + '/assets/css/user-rtl.min.css" type="text/css" rel="stylesheet" id="user-style-rtl">\n		<link href="' + assets2 + `/assets/css/user.min.css" type="text/css" rel="stylesheet" id="user-style-default">
+    app: ({ head, body, assets: assets2, nonce, env }) => '<!DOCTYPE html>\n<html lang="en">\n	<head>\n		<meta charset="utf-8">\n		<meta name="viewport" content="width=device-width, initial-scale=1">\n		<link rel="icon" href="' + assets2 + '/favicon.png" />\n\n		<script src="' + assets2 + '/vendors/imagesloaded/imagesloaded.pkgd.min.js"><\/script>\n		<script src="' + assets2 + '/vendors/simplebar/simplebar.min.js"><\/script>\n		<script src="' + assets2 + '/assets/js/config.js"><\/script>\n		<link rel="preconnect" href="https://fonts.googleapis.com">\n		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">\n		<link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@300;400;600;700;800;900&amp;display=swap" rel="stylesheet">\n		<link href="' + assets2 + '/vendors/simplebar/simplebar.min.css" rel="stylesheet">\n		<link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">\n		<link href="' + assets2 + '/assets/css/theme-rtl.min.css" type="text/css" rel="stylesheet" id="style-rtl">\n		<link href="' + assets2 + '/assets/css/theme.min.css" type="text/css" rel="stylesheet" id="style-default">\n		<link href="' + assets2 + '/assets/css/user-rtl.min.css" type="text/css" rel="stylesheet" id="user-style-rtl">\n		<link href="' + assets2 + '/assets/css/user.min.css" type="text/css" rel="stylesheet" id="user-style-default">\n		<link href="' + assets2 + `/assets/css/svelecte.css" type="text/css" rel="stylesheet" id="user-style-default">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" crossorigin=""/>
 		<script>
 			var esplatformIsRTL = window.config.config.esplatformIsRTL;
@@ -248,10 +250,10 @@ const options = {
 		<div class="error">
 			<span class="status">` + status + '</span>\n			<div class="message">\n				<h1>' + message + "</h1>\n			</div>\n		</div>\n	</body>\n</html>\n"
   },
-  version_hash: "1nbj4rj"
+  version_hash: "1qmy2yn"
 };
 function get_hooks() {
-  return import('./chunks/hooks.server-fee0af8b.js');
+  return import('./chunks/hooks.server-f05bc8dd.js');
 }
 
 /** @type {Record<string, string>} */
@@ -1428,6 +1430,7 @@ function is_form_content_type(request) {
 function exec(match, params, matchers) {
   const result = {};
   const values = match.slice(1);
+  const values_needing_match = values.filter((value) => value !== void 0);
   let buffered = 0;
   for (let i = 0; i < params.length; i += 1) {
     const param = params[i];
@@ -1446,6 +1449,9 @@ function exec(match, params, matchers) {
       const next_param = params[i + 1];
       const next_value = values[i + 1];
       if (next_param && !next_param.rest && next_param.optional && next_value && param.chained) {
+        buffered = 0;
+      }
+      if (!next_param && !next_value && Object.keys(result).length === values_needing_match.length) {
         buffered = 0;
       }
       continue;
@@ -1558,8 +1564,8 @@ async function render_endpoint(event, mod, state) {
     /** @type {import('types').HttpMethod} */
     event.request.method
   );
-  let handler = mod[method];
-  if (!handler && method === "HEAD") {
+  let handler = mod[method] || mod.fallback;
+  if (method === "HEAD" && mod.GET && !mod.HEAD) {
     handler = mod.GET;
   }
   if (!handler) {
@@ -1672,6 +1678,7 @@ function make_trackable(url, callback) {
   return tracked;
 }
 function disable_hash(url) {
+  allow_nodejs_console_log(url);
   Object.defineProperty(url, "hash", {
     get() {
       throw new Error(
@@ -1681,12 +1688,20 @@ function disable_hash(url) {
   });
 }
 function disable_search(url) {
+  allow_nodejs_console_log(url);
   for (const property of ["search", "searchParams"]) {
     Object.defineProperty(url, property, {
       get() {
         throw new Error(`Cannot access url.${property} on a page with prerendering enabled`);
       }
     });
+  }
+}
+function allow_nodejs_console_log(url) {
+  {
+    url[Symbol.for("nodejs.util.inspect.custom")] = (depth, opts, inspect) => {
+      return inspect(new URL(url), opts);
+    };
   }
 }
 const DATA_SUFFIX = "/__data.json";
@@ -1898,6 +1913,7 @@ async function unwrap_promises(object) {
   return object;
 }
 const INVALIDATED_PARAM = "x-sveltekit-invalidated";
+const TRAILING_SLASH_PARAM = "x-sveltekit-trailing-slash";
 async function load_server_data({
   event,
   state,
@@ -2927,6 +2943,14 @@ async function respond_with_error({
   error: error2,
   resolve_opts
 }) {
+  if (event.request.headers.get("x-sveltekit-error")) {
+    return static_error_page(
+      options2,
+      status,
+      /** @type {Error} */
+      error2.message
+    );
+  }
   const fetched = [];
   try {
     const branch = [];
@@ -3711,7 +3735,8 @@ async function respond(request, options2, manifest, state) {
   let invalidated_data_nodes;
   if (is_data_request) {
     decoded = strip_data_suffix(decoded) || "/";
-    url.pathname = strip_data_suffix(url.pathname) || "/";
+    url.pathname = strip_data_suffix(url.pathname) + (url.searchParams.get(TRAILING_SLASH_PARAM) === "1" ? "/" : "") || "/";
+    url.searchParams.delete(TRAILING_SLASH_PARAM);
     invalidated_data_nodes = url.searchParams.get(INVALIDATED_PARAM)?.split("").map((node) => node === "1");
     url.searchParams.delete(INVALIDATED_PARAM);
   }
@@ -3982,6 +4007,13 @@ async function respond(request, options2, manifest, state) {
           }
         }
         return response;
+      }
+      if (state.error && event2.isSubRequest) {
+        return await fetch(request, {
+          headers: {
+            "x-sveltekit-error": "true"
+          }
+        });
       }
       if (state.error) {
         return text("Internal Server Error", {

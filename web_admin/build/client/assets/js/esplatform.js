@@ -5298,7 +5298,7 @@
           case 'esplatformTheme': {
             document.documentElement.classList[
               value === 'dark' ? 'add' : 'remove'
-            ]('dark');
+            ]("dark");
             const clickControl = new CustomEvent('clickControl', {
               detail: { control, value }
             });
