@@ -43,6 +43,8 @@ services:
       environment:
         - RABBITMQ_DEFAULT_USER=esuser
         - RABBITMQ_DEFAULT_PASS=espassword
+      networks:
+        - internal
 
     certbot:
       image: certbot/certbot:latest
