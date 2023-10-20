@@ -1,11 +1,5 @@
 version: "3.1"
 services:
-    redis:
-      image: redis:alpine
-      container_name: esredis
-      networks:
-       - internal
-
     app:
       build: sourcefiles/app
       working_dir: /application
@@ -32,6 +26,23 @@ services:
         - "443:443"
       networks:
         - internal
+
+    redis:
+      image: redis:alpine
+      container_name: esredis
+      # ports:
+      #   - 6379:6379
+      networks:
+        - internal
+
+    rabbitmq:
+      image: rabbitmq:alpine
+      container_name: esrabbitmq
+      # ports:
+      #   - 5672:5672
+      environment:
+        - RABBITMQ_DEFAULT_USER=esuser
+        - RABBITMQ_DEFAULT_PASS=espassword
 
     certbot:
       image: certbot/certbot:latest
