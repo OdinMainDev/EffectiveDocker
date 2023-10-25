@@ -18,6 +18,7 @@ services:
       volumes:
           - ./build:/application
           - ./web_admin:/web_admin
+          - ./web_casino:/web_casino
           - ./sourcefiles/nginx/${CONFIG_TYPE}:/etc/nginx/conf.d
           - ./sourcefiles/certbot/www:/var/www/certbot:ro
           - ./sourcefiles/certbot/conf:/etc/letsencrypt:ro
