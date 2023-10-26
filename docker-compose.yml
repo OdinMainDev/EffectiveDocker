@@ -14,7 +14,7 @@ services:
     nginx:
       image: nginx:alpine
       working_dir: /application
-      container_name: esngingx
+      container_name: esnginx
       volumes:
           - ./build:/application
           - ./web_admin:/web_admin
