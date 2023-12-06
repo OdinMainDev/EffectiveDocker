@@ -46,11 +46,16 @@ services:
     rabbitmq:
       image: rabbitmq:alpine
       container_name: esrabbitmq
+      hostname: esrabbitmq
       # ports:
       #   - 5672:5672
+      volumes:
+        - ./sourcefiles/rabbit/enabled_plugins:/etc/rabbitmq/enabled_plugins:rw
+        - ./sourcefiles/rabbit/plugins:/usr/lib/rabbitmq/plugins
       environment:
         - RABBITMQ_DEFAULT_USER=esuser
         - RABBITMQ_DEFAULT_PASS=espassword
+        - RABBITMQ_PLUGINS_DIR=/opt/rabbitmq/plugins:/usr/lib/rabbitmq/plugins
       networks:
         - internal
 
