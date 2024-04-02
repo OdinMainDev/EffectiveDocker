@@ -1,20 +1,23 @@
 version: "3.1"
 services:
-    app:
-      build: sourcefiles/app
-      working_dir: /application
+    esapp:
+      build:
+        dockerfile: Dockerfile
+        context: application
       container_name: esapp
-      volumes:
-        - ./build:/application
-        - ./web_admin:/web_admin
-        - ./sourcefiles/app/supervisord_${CONFIG_TYPE}.conf:/etc/supervisor/conf.d/supervisord.conf
+      restart: always
       networks:
         - internal
+      env_file:
+        - ./sourcefiles/app/.env
 
     nginx:
       image: nginx:alpine
       working_dir: /application
       container_name: esnginx
+      depends_on:
+        - esapp
+        - grafana
       volumes:
           - ./build:/application
           - ./web_admin:/web_admin
@@ -32,14 +35,15 @@ services:
             protocol: tcp
             published: 443
             target: 443
+          - "3000:3000"
       networks:
         - internal
 
     redis:
       image: redis:alpine
       container_name: esredis
-      # ports:
-      #   - 6379:6379
+#      ports:
+#        - 6379:6379
       networks:
         - internal
 
@@ -47,8 +51,9 @@ services:
       image: rabbitmq:alpine
       container_name: esrabbitmq
       hostname: esrabbitmq
-      # ports:
-      #   - 5672:5672
+#      ports:
+#        - 5672:5672
+#        - 15692:15692
       volumes:
         - ./sourcefiles/rabbit/enabled_plugins:/etc/rabbitmq/enabled_plugins:rw
         - ./sourcefiles/rabbit/plugins:/usr/lib/rabbitmq/plugins
@@ -81,7 +86,173 @@ services:
         - CLAMD_STARTUP_TIMEOUT=1800
       networks:
         - internal
-      
+
+    # Open telemetry collector (for main app)
+    otel-collector:
+      container_name: otel-collector
+      image: otel/opentelemetry-collector-contrib
+      volumes:
+        - ./sourcefiles/otel-collector/config.yaml:/etc/otelcol-contrib/config.yaml
+#      ports:
+#        - "1888:1888" # pprof extension
+#        - "8888:8888" # Prometheus metrics exposed by the Collector
+#        - "8889:8889" # Prometheus exporter metrics
+#        - "13133:13133" # health_check extension
+#        - "4317:4317" # OTLP gRPC receiver
+#        - "4318:4318" # OTLP http receiver
+#        - "55679:55679" # zpages extension
+      networks:
+        - internal
+
+    # Traces database
+    tempo:
+      container_name: tempo
+      image: grafana/tempo:latest
+      command: [ "-config.file=/etc/tempo.yaml" ]
+      volumes:
+        - ./sourcefiles/tempo/tempo.yaml:/etc/tempo.yaml
+#      ports:
+#        - "14268"  # jaeger ingest
+#        - "3200"   # tempo
+#        - "4317"  # otlp grpc
+#        - "4318"  # otlp http
+#        - "9411"   # zipkin
+      networks:
+        - internal
+
+    # Nginx metrics exporter
+    nginx-prometheus-exporter:
+      image: nginx/nginx-prometheus-exporter:1.0
+      container_name: prometheus-nginx-exporter
+      restart: always
+      command:
+        - -nginx.scrape-uri=http://nginx:8765/status
+      networks:
+        - internal
+      depends_on:
+        - nginx
+
+    # Redis metrics exporter
+    redis_exporter:
+      container_name: redis_exporter
+      image: oliver006/redis_exporter
+      depends_on:
+        - redis
+      networks:
+        - internal
+      command:
+        - '--redis.addr=redis://redis:6379'
+
+    #  Metrics collector.
+    #  It scrapes targets defined in --promscrape.config
+    #  And forward them to --remoteWrite.url
+    vmagent:
+      container_name: vmagent
+      image: victoriametrics/vmagent:v1.99.0
+      depends_on:
+        - "victoriametrics"
+#      ports:
+#        - 8429:8429
+      volumes:
+        - vmagentdata:/vmagentdata
+        - ./sourcefiles/vmagent/prometheus.yml:/etc/prometheus/prometheus.yml
+      command:
+        - "--promscrape.config=/etc/prometheus/prometheus.yml"
+        - "--remoteWrite.url=http://victoriametrics:8428/api/v1/write"
+      networks:
+        - internal
+      restart: always
+
+    # VictoriaMetrics instance, a single process responsible for
+    # storing metrics and serve read requests.
+    victoriametrics:
+      container_name: victoriametrics
+      image: victoriametrics/victoria-metrics:v1.99.0
+#      ports:
+#        - 8428:8428
+#        - 8089:8089
+#        - 8089:8089/udp
+#        - 2003:2003
+#        - 2003:2003/udp
+#        - 4242:4242
+      volumes:
+        - vmdata:/storage
+      command:
+        - "--storageDataPath=/storage"
+        - "--graphiteListenAddr=:2003"
+        - "--opentsdbListenAddr=:4242"
+        - "--httpListenAddr=:8428"
+        - "--influxListenAddr=:8089"
+        - "--vmalert.proxyURL=http://vmalert:8880"
+      networks:
+        - internal
+      restart: always
+
+    # Grafana instance configured with VictoriaMetrics as datasource
+    grafana:
+      container_name: grafana
+      image: grafana/grafana:10.3.1
+      depends_on:
+        - "victoriametrics"
+#      ports:
+#        - 3000:3000
+      volumes:
+        - grafanadata:/var/lib/grafana
+        - ./sourcefiles/grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+        - ./sourcefiles/grafana/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml
+        - ./sourcefiles/grafana/dashboards:/var/lib/grafana/dashboards
+      networks:
+        - internal
+      restart: always
+
+    # vmalert executes alerting and recording rules
+    vmalert:
+      container_name: vmalert
+      image: victoriametrics/vmalert:v1.99.0
+      depends_on:
+        - "victoriametrics"
+        - "alertmanager"
+#      ports:
+#        - 8880:8880
+      volumes:
+        - ./sourcefiles/vmalert/alerts.yml:/etc/alerts/alerts.yml
+        - ./sourcefiles/vmalert/alerts-health.yml:/etc/alerts/alerts-health.yml
+        - ./sourcefiles/vmalert/alerts-vmagent.yml:/etc/alerts/alerts-vmagent.yml
+        - ./sourcefiles/vmalert/alerts-vmalert.yml:/etc/alerts/alerts-vmalert.yml
+      command:
+        - "--datasource.url=http://victoriametrics:8428/"
+        - "--remoteRead.url=http://victoriametrics:8428/"
+        - "--remoteWrite.url=http://victoriametrics:8428/"
+        - "--notifier.url=http://alertmanager:9093/"
+        - "--rule=/etc/alerts/*.yml"
+        # display source of alerts in grafana
+        - "--external.url=http://127.0.0.1:3000" #grafana outside container
+        # when copypaste the line be aware of '$$' for escaping in '$expr'
+        - '--external.alert.source=explore?orgId=1&left={"datasource":"VictoriaMetrics","queries":[{"expr":{{$$expr|jsonEscape|queryEscape}},"refId":"A"}],"range":{"from":"now-1h","to":"now"}}'
+      networks:
+        - internal
+      restart: always
+
+    # alertmanager receives alerting notifications from vmalert
+    # and distributes them according to --config.file.
+    alertmanager:
+      container_name: alertmanager
+      image: prom/alertmanager:v0.27.0
+      volumes:
+        - ./sourcefiles/alertmanager/alertmanager.yml:/config/alertmanager.yml
+      command:
+        - "--config.file=/config/alertmanager.yml"
+#      ports:
+#        - 9093:9093
+      networks:
+        - internal
+      restart: always
+
+volumes:
+  vmagentdata: {}
+  vmdata: {}
+  grafanadata: {}
+
 networks:
   internal:
     driver: bridge

@@ -1,0 +1,65 @@
+stream_over_http_enabled: true
+server:
+  http_listen_port: 3200
+
+query_frontend:
+  search:
+    duration_slo: 5s
+    throughput_bytes_slo: 1.073741824e+09
+  trace_by_id:
+    duration_slo: 5s
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+        http:
+storage:
+  trace:
+    backend: local
+    wal:
+      path: /tmp/tempo/wal
+    local:
+      path: /tmp/tempo/blocks
+
+# Configures the metrics generator component of Tempo.
+metrics_generator:
+  # Specifies which processors to use.
+  processor:
+    # Span metrics create metrics based on span type, duration, name and service.
+    span_metrics:
+      # Configure extra dimensions to add as metric labels.
+      dimensions:
+        - http.method
+        - http.target
+        - http.status_code
+        - service.version
+    # Service graph metrics create node and edge metrics for determinng service interactions.
+    service_graphs:
+      # Configure extra dimensions to add as metric labels.
+      dimensions:
+        - http.method
+        - http.target
+        - http.status_code
+        - service.version
+  # The registry configuration determines how to process metrics.
+  registry:
+    collection_interval: 5s                 # Create new metrics every 5s.
+    # Configure extra labels to be added to metrics.
+    external_labels:
+      source: tempo
+      group: 'effectivesolution'
+  # Configures where the store for metrics is located.
+  storage:
+    # WAL for metrics generation.
+    path: /tmp/tempo/generator/wal
+    # Where to remote write metrics to.
+    remote_write:
+      - url: http://victoriametrics:8428/api/v1/write  # URL of locally running Mimir instance.
+        send_exemplars: true # Send exemplars along with their metrics.
+  traces_storage:
+    path: /tmp/tempo/generator/traces
+
+overrides:
+  metrics_generator_processors: ['service-graphs', 'span-metrics','local-blocks']

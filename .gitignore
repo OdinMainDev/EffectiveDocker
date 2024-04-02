@@ -1,7 +1,6 @@
-application/*
+application
 sourcefiles/certbot/www/*
 sourcefiles/certbot/conf/*
 .env
-!build/.env
+sourcefiles/app/.env
 sourcefiles/clamav/*
-build/storage/logs/*
