@@ -1,11 +1,11 @@
 version: "3.1"
 services:
     esapp:
-      build:
-        dockerfile: Dockerfile
-        context: application
+      image: effective-solution:dev
       container_name: esapp
       restart: always
+      volumes:
+        - ./storage:/storage
       networks:
         - internal
       env_file:
@@ -19,11 +19,8 @@ services:
         - esapp
         - grafana
       volumes:
-          - ./build:/application
-          - ./web_admin:/web_admin
-          - ./web_casino:/web_casino
-          - ./web_support:/web_support
-          - ./sourcefiles/nginx/${CONFIG_TYPE}:/etc/nginx/conf.d
+          - ./nginx:/application
+          - ./sourcefiles/nginx/production:/etc/nginx/conf.d
           - ./sourcefiles/certbot/www:/var/www/certbot:ro
           - ./sourcefiles/certbot/conf:/etc/letsencrypt:ro
       ports:
@@ -42,8 +39,6 @@ services:
     redis:
       image: redis:alpine
       container_name: esredis
-#      ports:
-#        - 6379:6379
       networks:
         - internal
 
@@ -51,9 +46,6 @@ services:
       image: rabbitmq:alpine
       container_name: esrabbitmq
       hostname: esrabbitmq
-#      ports:
-#        - 5672:5672
-#        - 15692:15692
       volumes:
         - ./sourcefiles/rabbit/enabled_plugins:/etc/rabbitmq/enabled_plugins:rw
         - ./sourcefiles/rabbit/plugins:/usr/lib/rabbitmq/plugins
@@ -64,15 +56,15 @@ services:
       networks:
         - internal
 
-    certbot:
-      image: certbot/certbot:latest
-      container_name: escertbot
-      volumes:
-        - ./sourcefiles/certbot/www:/var/www/certbot:rw
-        - ./sourcefiles/certbot/conf:/etc/letsencrypt:rw
-        - ./sourcefiles/certbot:/certbot
-      command: chmod +x "/certbot/${CONFIG_TYPE}.sh"
-      entrypoint: sh -c "/certbot/${CONFIG_TYPE}.sh"
+#    certbot:
+#      image: certbot/certbot:latest
+#      container_name: escertbot
+#      volumes:
+#        - ./sourcefiles/certbot/www:/var/www/certbot:rw
+#        - ./sourcefiles/certbot/conf:/etc/letsencrypt:rw
+#        - ./sourcefiles/certbot:/certbot
+#      command: chmod +x "/certbot/${CONFIG_TYPE}.sh"
+#      entrypoint: sh -c "/certbot/${CONFIG_TYPE}.sh"
 
     clamav:
       # image: mkodockx/docker-clamav
@@ -93,14 +85,6 @@ services:
       image: otel/opentelemetry-collector-contrib
       volumes:
         - ./sourcefiles/otel-collector/config.yaml:/etc/otelcol-contrib/config.yaml
-#      ports:
-#        - "1888:1888" # pprof extension
-#        - "8888:8888" # Prometheus metrics exposed by the Collector
-#        - "8889:8889" # Prometheus exporter metrics
-#        - "13133:13133" # health_check extension
-#        - "4317:4317" # OTLP gRPC receiver
-#        - "4318:4318" # OTLP http receiver
-#        - "55679:55679" # zpages extension
       networks:
         - internal
 
@@ -111,12 +95,6 @@ services:
       command: [ "-config.file=/etc/tempo.yaml" ]
       volumes:
         - ./sourcefiles/tempo/tempo.yaml:/etc/tempo.yaml
-#      ports:
-#        - "14268"  # jaeger ingest
-#        - "3200"   # tempo
-#        - "4317"  # otlp grpc
-#        - "4318"  # otlp http
-#        - "9411"   # zipkin
       networks:
         - internal
 
@@ -151,8 +129,6 @@ services:
       image: victoriametrics/vmagent:v1.99.0
       depends_on:
         - "victoriametrics"
-#      ports:
-#        - 8429:8429
       volumes:
         - vmagentdata:/vmagentdata
         - ./sourcefiles/vmagent/prometheus.yml:/etc/prometheus/prometheus.yml
@@ -168,13 +144,6 @@ services:
     victoriametrics:
       container_name: victoriametrics
       image: victoriametrics/victoria-metrics:v1.99.0
-#      ports:
-#        - 8428:8428
-#        - 8089:8089
-#        - 8089:8089/udp
-#        - 2003:2003
-#        - 2003:2003/udp
-#        - 4242:4242
       volumes:
         - vmdata:/storage
       command:
@@ -194,8 +163,6 @@ services:
       image: grafana/grafana:10.3.1
       depends_on:
         - "victoriametrics"
-#      ports:
-#        - 3000:3000
       volumes:
         - grafanadata:/var/lib/grafana
         - ./sourcefiles/grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
@@ -212,8 +179,6 @@ services:
       depends_on:
         - "victoriametrics"
         - "alertmanager"
-#      ports:
-#        - 8880:8880
       volumes:
         - ./sourcefiles/vmalert/alerts.yml:/etc/alerts/alerts.yml
         - ./sourcefiles/vmalert/alerts-health.yml:/etc/alerts/alerts-health.yml
@@ -242,8 +207,6 @@ services:
         - ./sourcefiles/alertmanager/alertmanager.yml:/config/alertmanager.yml
       command:
         - "--config.file=/config/alertmanager.yml"
-#      ports:
-#        - 9093:9093
       networks:
         - internal
       restart: always

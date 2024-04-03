@@ -1,4 +1,3 @@
-application
 sourcefiles/certbot/www/*
 sourcefiles/certbot/conf/*
 .env
