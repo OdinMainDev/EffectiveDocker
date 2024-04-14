@@ -1,0 +1,103 @@
+services:
+  esapp:
+    extends:
+      file: docker-compose-common.yml
+      service: esapp
+    image: effective-solution:latest
+    depends_on:
+      - rabbitmq
+      - redis
+      - otel-collector
+
+  nginx:
+    extends:
+      file: docker-compose-common.yml
+      service: nginx
+    depends_on:
+      - esapp
+      - grafana
+    volumes:
+      - ./sourcefiles/nginx/production:/etc/nginx/conf.d
+
+  redis:
+    extends:
+      file: docker-compose-common.yml
+      service: redis
+
+  rabbitmq:
+    extends:
+      file: docker-compose-common.yml
+      service: rabbitmq
+
+  otel-collector:
+    extends:
+      file: docker-compose-common.yml
+      service: otel-collector
+    depends_on:
+      - tempo
+
+  clamav:
+    extends:
+      file: docker-compose-common.yml
+      service: clamav
+
+  tempo:
+    extends:
+      file: docker-compose-common.yml
+      service: tempo
+
+  nginx-prometheus-exporter:
+    extends:
+      file: docker-compose-common.yml
+      service: nginx-prometheus-exporter
+    depends_on:
+      - nginx
+
+  redis_exporter:
+    extends:
+      file: docker-compose-common.yml
+      service: redis_exporter
+    depends_on:
+      - redis
+
+  vmagent:
+    extends:
+      file: docker-compose-common.yml
+      service: vmagent
+    depends_on:
+      - victoriametrics
+
+  victoriametrics:
+    extends:
+      file: docker-compose-common.yml
+      service: victoriametrics
+
+  grafana:
+    extends:
+      file: docker-compose-common.yml
+      service: grafana
+    depends_on:
+      - victoriametrics
+      - tempo
+
+  vmalert:
+    extends:
+      file: docker-compose-common.yml
+      service: vmalert
+    depends_on:
+      - victoriametrics
+      - alertmanager
+
+  alertmanager:
+    extends:
+      file: docker-compose-common.yml
+      service: alertmanager
+
+volumes:
+  vmagentdata: {}
+  vmdata: {}
+  grafanadata: {}
+
+networks:
+  internal:
+    driver: bridge

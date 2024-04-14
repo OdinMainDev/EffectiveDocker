@@ -1,0 +1,23 @@
+services:
+
+  redis:
+    extends:
+      file: docker-compose-common.yml
+      service: redis
+    ports:
+      - "6379:6379"
+
+  rabbitmq:
+    volumes:
+      - ./sourcefiles/rabbit/enabled_plugins.dev:/etc/rabbitmq/enabled_plugins:rw
+    extends:
+      file: docker-compose-common.yml
+      service: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+      - "15692:15692"
+
+networks:
+  internal:
+    driver: bridge
