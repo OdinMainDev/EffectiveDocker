@@ -31,10 +31,10 @@ services:
           target: 443
         - "3000:3000"
     environment:
-      - APP_PORT_ADMIN=10160
-      - APP_PORT_CASINO=10161
-      - APP_PORT_GAMES=10162
-      - APP_PORT_AFFILIATE=10163
+      - APP_PORT_ADMIN=10600
+      - APP_PORT_CASINO=10601
+      - APP_PORT_GAMES=10602
+      - APP_PORT_AFFILIATE=10603
     networks:
       - internal
     restart: always
