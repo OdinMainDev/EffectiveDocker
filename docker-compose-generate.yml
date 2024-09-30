@@ -1,0 +1,28 @@
+services:
+
+  certbot:
+    image: certbot/certbot:v2.10.0
+    container_name: escertbot
+    volumes:
+      - ./sourcefiles/certbot/www:/var/www/certbot:rw
+      - ./sourcefiles/certbot/conf:/etc/letsencrypt:rw
+      - ./sourcefiles/certbot:/certbot
+    environment:
+      - SERVER_TYPE=$SERVER_TYPE
+    entrypoint: ["/bin/sh","-c"]
+    command:
+      - |
+          certbot certonly --webroot -w /var/www/certbot --force-renewal --email support@effective-solution.com -d api$$SERVER_TYPE.effective-solution.com --agree-tos --non-interactive
+          certbot certonly --webroot -w /var/www/certbot --force-renewal --email support@effective-solution.com -d capi$$SERVER_TYPE.effective-solution.com --agree-tos --non-interactive
+          certbot certonly --webroot -w /var/www/certbot --force-renewal --email support@effective-solution.com -d gapi$$SERVER_TYPE.effective-solution.com --agree-tos --non-interactive
+          certbot certonly --webroot -w /var/www/certbot --force-renewal --email support@effective-solution.com -d aff-api$$SERVER_TYPE.effective-solution.com --agree-tos --non-interactive
+
+  nginx:
+    extends:
+      file: docker-compose-common.yml
+      service: nginx
+
+networks:
+  internal:
+    driver: bridge
+

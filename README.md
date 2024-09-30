@@ -7,6 +7,22 @@ Docker for effective solution projects
 
 Разные варианты запуска:
 
+**generate**
+Генерация ssl-сертификатов. Если в папке sourcefiles/certbot/conf/live нет действующих сертификатов, сервис работать
+не будет. Перед первым запуском эти сертификаты надо создать, и в дальнейшем регулярно обновлять. Делается это
+командой
+
+`$ run.sh generate`
+
+Для автоматизации надо добавить в крон регенерацию сертификатов.
+
+`> 0 5 1 */2 *  run.sh generate && run.sh reload`
+
+**generate-stage**
+Аналогично обычной генерации, только для стейджа.
+
+`> 0 5 1 */2 *  run.sh generate-stage && run.sh reload`
+
 **prod:** 
 Запускается контейнер с приложением effective-solution:latest, сервера redis и rabbitmq, аналитика и мониторинг. 
 Наружу открыты только порты приложения и 3000 - порт для Grafana (TODO: посадить на отдельный домен, выдать сертификат)
@@ -46,6 +62,6 @@ Grafana не открыта, так как она доступна через ng
 | alertmanager              | рассылка предупреждений по сигналам         | ✅    | ✅     |     |
 
 
+**Остановка:**
 
-After install add crontab worker
-> 0 5 1 */2 *  /usr/bin/docker compose up -f /var/docker/docker-compose.yml certbot
+`$ run.sh stop`

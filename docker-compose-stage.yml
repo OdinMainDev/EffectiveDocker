@@ -12,8 +12,8 @@ services:
       - "8085:8085"
 
   nginx:
-    volumes:
-      - ./sourcefiles/nginx/local:/etc/nginx/conf.d
+    environment:
+      - SERVER_TYPE=-stage
 
   redis:
     ports:
