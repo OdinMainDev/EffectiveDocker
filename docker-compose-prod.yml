@@ -17,7 +17,7 @@ services:
       - esapp
       - grafana
     volumes:
-      - ./sourcefiles/nginx/production:/etc/nginx/templates:ro
+      - ./sourcefiles/nginx/production:/etc/nginx/templates
 
   redis:
     extends:
