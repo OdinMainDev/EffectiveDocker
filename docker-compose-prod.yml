@@ -76,6 +76,8 @@ services:
     extends:
       file: docker-compose-common.yml
       service: grafana
+    environment:
+      - GF_SERVER_ROOT_URL=https://metrics.effective-solution.com/
     depends_on:
       - victoriametrics
       - tempo

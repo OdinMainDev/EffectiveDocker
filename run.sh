@@ -21,12 +21,10 @@ echo "Тип окружения $environment"
 
 if [ "$command" = "generate" ]; then
   echo "Генерация ssl сертификатов"
-  if [ "$environment" = "stage"]; then
+  if [ "$environment" = "stage" ]; then
     export SERVER_TYPE=-stage
-    docker compose -f docker-compose-generate.yml up --abort-on-container-exit
-  else
-    docker compose -f docker-compose-generate.yml up --abort-on-container-exit
   fi
+  docker compose -f docker-compose-generate.yml up --abort-on-container-exit
   exit
 fi
 
@@ -44,7 +42,7 @@ fi
 
 if [ "$command" = "update" ]; then
   echo "Обновление сервера"
-  if [ "$environment" = "stage"]; then
+  if [ "$environment" = "stage" ]; then
     run_stage '--no-deps esapp'
   else
     run_prod '--no-deps esapp'

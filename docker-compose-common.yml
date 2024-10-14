@@ -19,7 +19,6 @@ services:
         - ./nginx:/application
         - ./sourcefiles/certbot/www:/var/www/certbot:ro
         - ./sourcefiles/certbot/conf:/etc/letsencrypt:ro
-        - ./sourcefiles/nginx/generate:/etc/nginx/conf.d
     ports:
         - mode: host
           protocol: tcp

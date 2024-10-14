@@ -1,5 +1,18 @@
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ''      close;
+}
+
 server {
-    listen       3000;
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+
+    server_name metrics${SERVER_TYPE}.effective-solution.com;
+    ssl_certificate /etc/letsencrypt/live/metrics${SERVER_TYPE}.effective-solution.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/metrics${SERVER_TYPE}.effective-solution.com/privkey.pem;
+    ssl_trusted_certificate /etc/letsencrypt/live/metrics${SERVER_TYPE}.effective-solution.com/chain.pem;
+    ssl_stapling on;
+    ssl_stapling_verify on;
     client_max_body_size 108M;
 
     location / {

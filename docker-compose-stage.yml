@@ -42,3 +42,7 @@ services:
   victoriametrics:
     ports:
       - "8428:8428"
+
+  grafana:
+    environment:
+      - GF_SERVER_ROOT_URL=https://metrics-stage.effective-solution.com/
