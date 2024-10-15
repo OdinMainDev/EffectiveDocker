@@ -24,12 +24,11 @@ if [ "$command" = "generate" ]; then
   if [ "$environment" = "stage" ]; then
     export SERVER_TYPE=-stage
     docker compose -f docker-compose-generate.yml up --abort-on-container-exit
-    docker compose -f docker-compose-prod.yml -f docker-compose-stage.yml exec esnginx nginx -s reload
   fi
   if [ "$environment" = "prod" ]; then
     docker compose -f docker-compose-generate.yml up --abort-on-container-exit
-    docker compose -f docker-compose-prod.yml exec esnginx nginx -s reload
   fi
+  docker exec -it esnginx nginx -s reload
   exit
 fi
 
