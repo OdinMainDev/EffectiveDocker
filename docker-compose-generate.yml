@@ -18,13 +18,6 @@ services:
           certbot certonly --webroot -w /var/www/certbot --force-renewal --email support@effective-solution.com -d aff-api$$SERVER_TYPE.effective-solution.com --agree-tos --non-interactive
           certbot certonly --webroot -w /var/www/certbot --force-renewal --email support@effective-solution.com -d metrics$$SERVER_TYPE.effective-solution.com --agree-tos --non-interactive
 
-  nginx:
-    extends:
-      file: docker-compose-common.yml
-      service: nginx
-    volumes:
-      - ./sourcefiles/nginx/generate:/etc/nginx/templates
-
 networks:
   internal:
     driver: bridge

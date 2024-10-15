@@ -23,14 +23,13 @@ if [ "$command" = "generate" ]; then
   echo "Генерация ssl сертификатов"
   if [ "$environment" = "stage" ]; then
     export SERVER_TYPE=-stage
+    docker compose -f docker-compose-generate.yml up --abort-on-container-exit
+    docker compose -f docker-compose-prod.yml -f docker-compose-stage.yml exec esnginx nginx -s reload
   fi
-  docker compose -f docker-compose-generate.yml up --abort-on-container-exit
-  exit
-fi
-
-if [ "$command" = "reload" ]; then
-  echo "Перезагрузка nginx после генерации"
-  docker compose -f docker-compose-prod.yml exec esnginx nginx -s reload
+  if [ "$environment" = "prod" ]; then
+    docker compose -f docker-compose-generate.yml up --abort-on-container-exit
+    docker compose -f docker-compose-prod.yml exec esnginx nginx -s reload
+  fi
   exit
 fi
 
@@ -44,7 +43,8 @@ if [ "$command" = "update" ]; then
   echo "Обновление сервера"
   if [ "$environment" = "stage" ]; then
     run_stage '--no-deps esapp'
-  else
+  fi
+  if [ "$environment" = "prod" ]; then
     run_prod '--no-deps esapp'
   fi
   exit
