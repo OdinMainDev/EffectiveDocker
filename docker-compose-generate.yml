@@ -1,23 +1,10 @@
 services:
-
-  certbot:
-    image: certbot/certbot:v2.10.0
-    container_name: escertbot
+  selfsigned-cert:
+    image: alpine:latest
+    container_name: selfsigned-cert
     volumes:
-      - ./sourcefiles/certbot/www:/var/www/certbot:rw
-      - ./sourcefiles/certbot/conf:/etc/letsencrypt:rw
-      - ./sourcefiles/certbot:/certbot
+      - ./sourcefiles/certbot/conf:/certbot:rw
+      - ./sourcefiles/certbot/generate-cert.sh:/generate-cert.sh:ro
     environment:
-      - SERVER_TYPE=$SERVER_TYPE
-    entrypoint: ["/bin/sh","-c"]
-    command:
-      - |
-          certbot certonly --webroot -w /var/www/certbot --force-renewal --email support@effective-solution.com -d api$$SERVER_TYPE.effective-solution.com --agree-tos --non-interactive
-          certbot certonly --webroot -w /var/www/certbot --force-renewal --email support@effective-solution.com -d capi$$SERVER_TYPE.effective-solution.com --agree-tos --non-interactive
-          certbot certonly --webroot -w /var/www/certbot --force-renewal --email support@effective-solution.com -d gapi$$SERVER_TYPE.effective-solution.com --agree-tos --non-interactive
-          certbot certonly --webroot -w /var/www/certbot --force-renewal --email support@effective-solution.com -d aff-api$$SERVER_TYPE.effective-solution.com --agree-tos --non-interactive
-          certbot certonly --webroot -w /var/www/certbot --force-renewal --email support@effective-solution.com -d metrics$$SERVER_TYPE.effective-solution.com --agree-tos --non-interactive
-
-networks:
-  internal:
-    driver: bridge
+      - SERVER_TYPE=${SERVER_TYPE}
+    entrypoint: sh /generate-cert.sh

@@ -16,7 +16,7 @@ services:
     working_dir: /application
     container_name: esnginx
     volumes:
-        - ./nginx:/application
+        - ./nginx:/application:rw
         - ./sourcefiles/certbot/www:/var/www/certbot:ro
         - ./sourcefiles/certbot/conf:/etc/letsencrypt:ro
     ports:
