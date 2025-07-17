@@ -23,6 +23,7 @@ if [ "$command" = "generate" ]; then
   echo "Генерация ssl сертификатов"
   if [ "$environment" = "stage" ]; then
     export SERVER_TYPE=-stage
+    export DOMAIN_VERSION=-v2
     docker compose -f docker-compose-generate.yml up --abort-on-container-exit
   fi
   if [ "$environment" = "prod" ]; then

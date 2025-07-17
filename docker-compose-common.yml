@@ -34,6 +34,8 @@ services:
       - APP_PORT_CASINO=10601
       - APP_PORT_GAMES=10602
       - APP_PORT_AFFILIATE=10603
+      - SERVER_TYPE=${SERVER_TYPE}
+      - DOMAIN_VERSION=${DOMAIN_VERSION}
     networks:
       - internal
     restart: always
@@ -53,8 +55,8 @@ services:
       - ./sourcefiles/rabbit/enabled_plugins.prod:/etc/rabbitmq/enabled_plugins:rw
       - ./sourcefiles/rabbit/plugins:/usr/lib/rabbitmq/plugins
     environment:
-      - RABBITMQ_DEFAULT_USER=esuser
-      - RABBITMQ_DEFAULT_PASS=espassword
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER:-esuser}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS:-espassword}
       - RABBITMQ_PLUGINS_DIR=/opt/rabbitmq/plugins:/usr/lib/rabbitmq/plugins
     networks:
       - internal

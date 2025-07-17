@@ -7,4 +7,5 @@ services:
       - ./sourcefiles/certbot/generate-cert.sh:/generate-cert.sh:ro
     environment:
       - SERVER_TYPE=${SERVER_TYPE}
+      - DOMAIN_VERSION=${DOMAIN_VERSION}
     entrypoint: sh /generate-cert.sh
