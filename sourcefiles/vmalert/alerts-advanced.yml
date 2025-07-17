@@ -1,0 +1,158 @@
+groups:
+  - name: "application.alerts"
+    rules:
+      - alert: "ApplicationDown"
+        expr: up{job="application"} == 0
+        for: 1m
+        labels:
+          severity: "critical"
+          service: "esapp"
+        annotations:
+          summary: "Application is down"
+          description: "Application {{ $labels.instance }} has been down for more than 1 minute"
+          
+      - alert: "ApplicationHighMemory"
+        expr: (container_memory_usage_bytes{name="esapp"} / container_spec_memory_limit_bytes{name="esapp"}) * 100 > 80
+        for: 5m
+        labels:
+          severity: "warning"
+          service: "esapp"
+        annotations:
+          summary: "High memory usage"
+          description: "Application memory usage is above 80%"
+          
+      - alert: "ApplicationHighCPU"
+        expr: rate(container_cpu_usage_seconds_total{name="esapp"}[5m]) * 100 > 80
+        for: 5m
+        labels:
+          severity: "warning"
+          service: "esapp"
+        annotations:
+          summary: "High CPU usage"
+          description: "Application CPU usage is above 80%"
+          
+      - alert: "ApplicationSlowResponse"
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job="application"}[5m])) > 1
+        for: 5m
+        labels:
+          severity: "warning"
+          service: "esapp"
+        annotations:
+          summary: "Slow response time"
+          description: "95th percentile response time is above 1 second"
+
+  - name: "infrastructure.alerts"
+    rules:
+      - alert: "RedisDown"
+        expr: redis_up == 0
+        for: 1m
+        labels:
+          severity: "critical"
+          service: "redis"
+        annotations:
+          summary: "Redis is down"
+          description: "Redis instance {{ $labels.instance }} is down"
+          
+      - alert: "RedisMemoryHigh"
+        expr: redis_memory_used_bytes / redis_memory_max_bytes * 100 > 80
+        for: 5m
+        labels:
+          severity: "warning"
+          service: "redis"
+        annotations:
+          summary: "Redis memory usage high"
+          description: "Redis memory usage is above 80%"
+          
+      - alert: "RabbitMQDown"
+        expr: rabbitmq_up == 0
+        for: 1m
+        labels:
+          severity: "critical"
+          service: "rabbitmq"
+        annotations:
+          summary: "RabbitMQ is down"
+          description: "RabbitMQ instance {{ $labels.instance }} is down"
+          
+      - alert: "RabbitMQQueueHigh"
+        expr: rabbitmq_queue_messages > 1000
+        for: 5m
+        labels:
+          severity: "warning"
+          service: "rabbitmq"
+        annotations:
+          summary: "RabbitMQ queue size high"
+          description: "Queue {{ $labels.queue }} has more than 1000 messages"
+          
+      - alert: "DiskSpaceHigh"
+        expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) * 100 < 20
+        for: 5m
+        labels:
+          severity: "warning"
+          service: "system"
+        annotations:
+          summary: "Low disk space"
+          description: "Disk space is below 20%"
+
+  - name: "monitoring.alerts"
+    rules:
+      - alert: "GrafanaDown"
+        expr: up{job="grafana"} == 0
+        for: 5m
+        labels:
+          severity: "warning"
+          service: "grafana"
+        annotations:
+          summary: "Grafana is down"
+          description: "Grafana instance is down"
+          
+      - alert: "VictoriaMetricsDown"
+        expr: up{job="victoriametrics"} == 0
+        for: 1m
+        labels:
+          severity: "critical"
+          service: "victoriametrics"
+        annotations:
+          summary: "VictoriaMetrics is down"
+          description: "VictoriaMetrics instance is down"
+          
+      - alert: "LokiDown"
+        expr: up{job="loki"} == 0
+        for: 5m
+        labels:
+          severity: "warning"
+          service: "loki"
+        annotations:
+          summary: "Loki is down"
+          description: "Loki instance is down"
+          
+      - alert: "JaegerDown"
+        expr: up{job="jaeger"} == 0
+        for: 5m
+        labels:
+          severity: "warning"
+          service: "jaeger"
+        annotations:
+          summary: "Jaeger is down"
+          description: "Jaeger instance is down"
+
+  - name: "health.alerts"
+    rules:
+      - alert: "ServiceHealthCheckFailed"
+        expr: container_health_status != 1
+        for: 1m
+        labels:
+          severity: "critical"
+          service: "{{ $labels.container_name }}"
+        annotations:
+          summary: "Service health check failed"
+          description: "Health check for {{ $labels.container_name }} has failed"
+          
+      - alert: "ServiceRestarted"
+        expr: increase(container_restart_count[5m]) > 0
+        for: 0m
+        labels:
+          severity: "warning"
+          service: "{{ $labels.container_name }}"
+        annotations:
+          summary: "Service restarted"
+          description: "Container {{ $labels.container_name }} has been restarted"

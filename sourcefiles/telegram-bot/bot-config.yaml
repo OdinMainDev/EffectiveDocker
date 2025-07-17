@@ -1,0 +1,36 @@
+telegram:
+  bot_token: "${TELEGRAM_BOT_TOKEN}"
+  chat_id: "${TELEGRAM_CHAT_ID}"
+  
+alertmanager:
+  url: "http://alertmanager:9093"
+  
+health_check:
+  interval: 300  # 5 minutes
+  full_notifications: "${HEALTH_CHECK_FULL_NOTIFICATIONS:-false}"
+  
+services:
+  - name: "esapp"
+    url: "http://esapp:10600/health"
+    critical: true
+  - name: "nginx"
+    url: "http://nginx:80/"
+    critical: true
+  - name: "redis"
+    command: "redis-cli ping"
+    critical: true
+  - name: "rabbitmq"
+    command: "rabbitmq-diagnostics ping"
+    critical: true
+  - name: "grafana"
+    url: "http://grafana:3000/api/health"
+    critical: false
+  - name: "victoriametrics"
+    url: "http://victoriametrics:8428/health"
+    critical: false
+  - name: "loki"
+    url: "http://loki:3100/ready"
+    critical: false
+  - name: "jaeger"
+    url: "http://jaeger:16686/"
+    critical: false

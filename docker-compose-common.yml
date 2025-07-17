@@ -6,10 +6,21 @@ services:
     restart: always
     volumes:
       - ./storage:/storage
+      - ./storage/logs:/var/log/app
     networks:
       - internal
     env_file:
       - ./sourcefiles/app/.env
+    logging:
+      driver: fluentd
+      options:
+        fluentd-address: localhost:24224
+        tag: esapp
+        labels: "service,environment"
+    labels:
+      - "logging=promtail"
+      - "service=esapp"
+      - "environment=production"
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:10600/health"]
       interval: 30s
@@ -243,6 +254,7 @@ services:
       - ./sourcefiles/vmalert/alerts-health.yml:/etc/alerts/alerts-health.yml
       - ./sourcefiles/vmalert/alerts-vmagent.yml:/etc/alerts/alerts-vmagent.yml
       - ./sourcefiles/vmalert/alerts-vmalert.yml:/etc/alerts/alerts-vmalert.yml
+      - ./sourcefiles/vmalert/alerts-advanced.yml:/etc/alerts/alerts-advanced.yml
     command:
       - "--datasource.url=http://victoriametrics:8428/"
       - "--remoteRead.url=http://victoriametrics:8428/"

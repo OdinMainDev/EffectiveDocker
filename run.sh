@@ -1,11 +1,15 @@
 #!/bin/bash
 
 run_stage() {
-  docker compose -f docker-compose-prod.yml -f docker-compose-stage.yml up -d $1
+  docker compose -f docker-compose-common.yml -f docker-compose-prod.yml -f docker-compose-stage.yml -f docker-compose-monitoring.yml up -d $1
 }
 
 run_prod() {
-  docker compose -f docker-compose-prod.yml up -d $1
+  docker compose -f docker-compose-common.yml -f docker-compose-prod.yml -f docker-compose-monitoring.yml up -d $1
+}
+
+run_dev() {
+  docker compose -f docker-compose-common.yml -f docker-compose-dev.yml -f docker-compose-monitoring.yml up -d $1
 }
 
 environment=$1
@@ -47,6 +51,9 @@ if [ "$command" = "update" ]; then
   if [ "$environment" = "prod" ]; then
     run_prod '--no-deps esapp'
   fi
+  if [ "$environment" = "dev" ]; then
+    run_dev '--no-deps esapp'
+  fi
   exit
 fi
 
@@ -57,5 +64,5 @@ if [ "$environment" = "prod" ]; then
 elif [ "$environment" = "stage" ]; then
   run_stage
 else
-  docker compose -f docker-compose-dev.yml up -d
+  run_dev
 fi
